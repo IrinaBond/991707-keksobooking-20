@@ -81,7 +81,7 @@ var renderPin = function (card) {
   return pinElement;
 };
 
-var countsCard = 8;
+var COUNTS_CARD = 8;
 
 var createSimilarCards = function (count) {
   var cards = [];
@@ -90,7 +90,7 @@ var createSimilarCards = function (count) {
   }
   return cards;
 };
-var similarCards = createSimilarCards(countsCard);
+var similarCards = createSimilarCards(COUNTS_CARD);
 
 var createFragmentPin = function (cardsList) {
   var fragmentPin = document.createDocumentFragment();
