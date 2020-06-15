@@ -23,11 +23,12 @@ var createAuthor = function (i) {
   return author;
 };
 
-var map = document.querySelector('.map__pins');
+var map = document.querySelector('.map');
+var mapPins = document.querySelector('.map__pins');
 
 var createLocation = function () {
   var location = {};
-  location.x = getRandomFromRange(25, map.offsetWidth - 25);
+  location.x = getRandomFromRange(25, mapPins.offsetWidth - 25);
   location.y = getRandomFromRange(130, 650);
   return location;
 };
@@ -68,6 +69,11 @@ var createCard = function (i) {
   return newCard;
 };
 
+
+var cardTemplate = document.querySelector('#card')
+    .content
+    .querySelector('.map__card');
+
 var pinTemplate = document.querySelector('#pin')
     .content
     .querySelector('.map__pin');
@@ -99,6 +105,91 @@ var createFragmentPin = function (cardsList) {
   return fragmentPin;
 };
 
-map.appendChild(createFragmentPin(similarCards));
+mapPins.appendChild(createFragmentPin(similarCards));
+
+var isContains = function (argString, substring) {
+  if (argString.indexOf(substring) !== -1) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+var isFeatureContains = function (featureClassListValue, roomFeatures) {
+  for (var i = 0; i < roomFeatures.length; i++) {
+    if (isContains(featureClassListValue, roomFeatures[i])) {
+      return true;
+    }
+  }
+  return false;
+};
+
+
+var renderCard = function (card) {
+  var cardElement = cardTemplate.cloneNode(true);
+
+  var popupAvatar = cardElement.querySelector('.popup__avatar');
+  var popupTitle = cardElement.querySelector('.popup__title');
+  var popupAdress = cardElement.querySelector('.popup__text--address');
+  var popupPrice = cardElement.querySelector('.popup__text--price');
+  var popupType = cardElement.querySelector('.popup__type');
+  var popupCapacity = cardElement.querySelector('.popup__text--capacity');
+  var popupTime = cardElement.querySelector('.popup__text--time');
+  var popupFeaturesParent = cardElement.querySelector('.popup__features');
+  var popupFeaturesList = cardElement.querySelectorAll('.popup__feature');
+  var popupPhoto = cardElement.querySelector('.popup__photo');
+
+  popupAvatar.src = card.author.avatar;
+  popupTitle.textContent = card.offer.title;
+  popupAdress.textContent = card.offer.address;
+  popupPrice.textContent = card.offer.price + '₽/ночь';
+  switch (card.offer.type) {
+    case 'flat':
+      popupType.textContent = 'Квартира';
+      break;
+    case 'bungalo':
+      popupType.textContent = 'Бунгало';
+      break;
+    case 'house':
+      popupType.textContent = 'Дом';
+      break;
+    case 'palace':
+      popupType.textContent = 'Дворец';
+  }
+  popupCapacity.textContent = card.offer.rooms + ' комнаты для ' + card.offer.guests + ' гостей';
+  popupTime.textContent = 'Заезд после ' + card.offer.checkin + ', выезд до ' + card.offer.checkout;
+
+  var actualFetuares = card.offer.features;
+  for (var i = 0; i < popupFeaturesList.length; i++) {
+    if (!isFeatureContains(popupFeaturesList[i].classList.value, actualFetuares)) {
+      popupFeaturesParent.removeChild(popupFeaturesList[i]);
+    }
+  }
+  var photoParent = cardElement.querySelector('.popup__photos');
+  var actualPhotoArray = card.offer.photos;
+  for (var j = 0; j < actualPhotoArray.length; j++) {
+    if (j < 1) {
+      popupPhoto.src = actualPhotoArray[j];
+    } else {
+      var photoElement = popupPhoto.cloneNode(true);
+      photoElement.src = actualPhotoArray[j];
+      photoParent.appendChild(photoElement);
+    }
+  }
+  cardElement.querySelector('.popup__description').textContent = card.offer.description;
+  return cardElement;
+};
+
+var createFragmentCard = function (cardsList) {
+  var fragmentCard = document.createDocumentFragment();
+  for (var i = 0; i < cardsList.length; i++) {
+    fragmentCard.appendChild(renderCard(cardsList[i]));
+  }
+  return fragmentCard;
+};
+
+var filtersContainer = document.querySelector('.map__filters-container');
+
+map.insertBefore(createFragmentCard(similarCards), filtersContainer);
 
 document.querySelector('.map').classList.remove('map--faded');
