@@ -107,6 +107,28 @@ var createFragmentPin = function (cardsList) {
 
 mapPins.appendChild(createFragmentPin(similarCards));
 
+var checkEmptyField = function (cardValue, popupField) {
+  if (cardValue === undefined) {
+    popupField.classList.add('visually-hidden');
+  }
+};
+
+var convertOfferType = function (typeValue, popupTypeField) {
+  switch (typeValue) {
+    case 'flat':
+      popupTypeField.textContent = 'Квартира';
+      break;
+    case 'bungalo':
+      popupTypeField.textContent = 'Бунгало';
+      break;
+    case 'house':
+      popupTypeField.textContent = 'Дом';
+      break;
+    case 'palace':
+      popupTypeField.textContent = 'Дворец';
+  }
+};
+
 var isContains = function (argString, substring) {
   if (argString.indexOf(substring) !== -1) {
     return true;
@@ -115,19 +137,37 @@ var isContains = function (argString, substring) {
   }
 };
 
-var isFeatureContains = function (featureClassListValue, roomFeatures) {
-  for (var i = 0; i < roomFeatures.length; i++) {
-    if (isContains(featureClassListValue, roomFeatures[i])) {
+var isFeatureContains = function (featuresValue, featureField) {
+  for (var i = 0; i < featuresValue.length; i++) {
+    if (isContains(featureField, featuresValue[i])) {
       return true;
     }
   }
   return false;
 };
 
+var removeFeatureField = function (featuresValue, featureField, parentField) {
+  for (var i = 0; i < featureField.length; i++) {
+    if (!isFeatureContains(featuresValue, featureField[i].classList.value)) {
+      parentField.removeChild(featureField[i]);
+    }
+  }
+};
+
+var createImgFields = function (photoArray, popupPhotoField, parentField) {
+  for (var j = 0; j < photoArray.length; j++) {
+    if (j < 1) {
+      popupPhotoField.src = photoArray[j];
+    } else {
+      var photoElement = popupPhotoField.cloneNode(true);
+      photoElement.src = photoArray[j];
+      parentField.appendChild(photoElement);
+    }
+  }
+};
 
 var renderCard = function (card) {
   var cardElement = cardTemplate.cloneNode(true);
-
   var popupAvatar = cardElement.querySelector('.popup__avatar');
   var popupTitle = cardElement.querySelector('.popup__title');
   var popupAdress = cardElement.querySelector('.popup__text--address');
@@ -137,46 +177,28 @@ var renderCard = function (card) {
   var popupTime = cardElement.querySelector('.popup__text--time');
   var popupFeaturesParent = cardElement.querySelector('.popup__features');
   var popupFeaturesList = cardElement.querySelectorAll('.popup__feature');
+  var photoParent = cardElement.querySelector('.popup__photos');
   var popupPhoto = cardElement.querySelector('.popup__photo');
+  var popupDescription = cardElement.querySelector('.popup__description');
+
+  var cardValues = [card.author.avatar, card.offer.title, card.offer.address, card.offer.price, card.offer.type, card.offer.rooms, card.offer.guests, card.offer.checkin, card.offer.checkout, card.offer.features, card.offer.description, card.offer.photos];
+  var popupFields = [popupAvatar, popupTitle, popupAdress, popupPrice, popupType, popupCapacity, popupCapacity, popupTime, popupTime, popupFeaturesParent, popupDescription, popupPhoto];
+
+  for (var i = 0; i < cardValues.length; i++) {
+    checkEmptyField(cardValues[i], popupFields[i]);
+  }
 
   popupAvatar.src = card.author.avatar;
   popupTitle.textContent = card.offer.title;
   popupAdress.textContent = card.offer.address;
   popupPrice.textContent = card.offer.price + '₽/ночь';
-  switch (card.offer.type) {
-    case 'flat':
-      popupType.textContent = 'Квартира';
-      break;
-    case 'bungalo':
-      popupType.textContent = 'Бунгало';
-      break;
-    case 'house':
-      popupType.textContent = 'Дом';
-      break;
-    case 'palace':
-      popupType.textContent = 'Дворец';
-  }
+  convertOfferType(card.offer.type, popupType);
   popupCapacity.textContent = card.offer.rooms + ' комнаты для ' + card.offer.guests + ' гостей';
   popupTime.textContent = 'Заезд после ' + card.offer.checkin + ', выезд до ' + card.offer.checkout;
+  removeFeatureField(card.offer.features, popupFeaturesList, popupFeaturesParent);
+  createImgFields(card.offer.photos, popupPhoto, photoParent);
+  popupDescription.textContent = card.offer.description;
 
-  var actualFetuares = card.offer.features;
-  for (var i = 0; i < popupFeaturesList.length; i++) {
-    if (!isFeatureContains(popupFeaturesList[i].classList.value, actualFetuares)) {
-      popupFeaturesParent.removeChild(popupFeaturesList[i]);
-    }
-  }
-  var photoParent = cardElement.querySelector('.popup__photos');
-  var actualPhotoArray = card.offer.photos;
-  for (var j = 0; j < actualPhotoArray.length; j++) {
-    if (j < 1) {
-      popupPhoto.src = actualPhotoArray[j];
-    } else {
-      var photoElement = popupPhoto.cloneNode(true);
-      photoElement.src = actualPhotoArray[j];
-      photoParent.appendChild(photoElement);
-    }
-  }
-  cardElement.querySelector('.popup__description').textContent = card.offer.description;
   return cardElement;
 };
 
