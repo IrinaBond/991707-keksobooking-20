@@ -227,33 +227,40 @@ var createFragmentCard = function (cardsList) {
 var filtersContainer = document.querySelector('.map__filters-container');
 
 var map = document.querySelector('.map');
-var add = document.querySelector('.ad-form');
-var addFormElements = document.querySelectorAll('.ad-form__element');
+var advert = document.querySelector('.ad-form');
+var adFormElements = document.querySelectorAll('.ad-form__element');
 var mapPinMain = document.querySelector('.map__pin--main');
-var adressField = document.querySelector('#address');
+var addressField = document.querySelector('#address');
 
-var inactivatePage = function () {
-  map.classList.add('map--faded');
-  add.classList.add('ad-form--disabled');
-  for (var i = 0; i < addFormElements.length; i++) {
-    addFormElements[i].setAttribute('disabled', true);
-  }
-  adressField.value = (parseFloat(mapPinMain.style.left) + Math.floor(mapPinMain.offsetWidth / 2)) + ' ,' + (parseFloat(mapPinMain.style.top) + Math.floor(mapPinMain.offsetHeight / 2));
+var toggleClassList = function (bool) {
+  map.classList.toggle('map--faded', bool);
+  advert.classList.toggle('ad-form--disabled', bool);
 };
 
-inactivatePage();
+var calculateAddress = function (offset) {
+  return (parseFloat(mapPinMain.style.left) + Math.floor(mapPinMain.offsetWidth / 2)) + ' ,' + (parseFloat(mapPinMain.style.top) + offset);
+};
+
+var inactivatePage = function () {
+  toggleClassList(true);
+  adFormElements.forEach(function (adFormElement) {
+    adFormElement.setAttribute('disabled', true);
+  });
+  addressField.value = calculateAddress(Math.floor(mapPinMain.offsetHeight / 2));
+};
 
 var activatePage = function () {
-  map.classList.remove('map--faded');
-  add.classList.remove('ad-form--disabled');
-  for (var i = 0; i < addFormElements.length; i++) {
-    addFormElements[i].removeAttribute('disabled');
-  }
-  adressField.value = (parseFloat(mapPinMain.style.left) + Math.floor(mapPinMain.offsetWidth / 2)) + ' ,' + (parseFloat(mapPinMain.style.top) + Math.floor(mapPinMain.offsetHeight / 2) + 11);
+  toggleClassList(false);
+  adFormElements.forEach(function (adFormElement) {
+    adFormElement.removeAttribute('disabled');
+  });
+  addressField.value = calculateAddress(Math.floor(mapPinMain.offsetHeight) + 11);
 
   mapPins.appendChild(createFragmentPin(similarCards));
   map.insertBefore(createFragmentCard(similarCards), filtersContainer);
 };
+
+inactivatePage();
 
 mapPinMain.addEventListener('mousedown', function (evt) {
   if (evt.button === 0) {
@@ -291,4 +298,3 @@ countOfGuests.addEventListener('change', function () {
 countOfRooms.addEventListener('change', function () {
   checkMatchesGuestsToRooms(countOfRooms, countOfGuests);
 });
-
