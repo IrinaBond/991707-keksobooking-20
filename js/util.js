@@ -14,11 +14,7 @@
     },
 
     isContains: function (argString, substring) {
-      if (argString.indexOf(substring) !== -1) {
-        return true;
-      } else {
-        return false;
-      }
+      return argString.indexOf(substring) !== -1;
     }
   };
 })();

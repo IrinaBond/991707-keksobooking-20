@@ -27,6 +27,8 @@
     addressField.value = calculateAddress(Math.floor(mapPinMain.offsetHeight / 2));
   };
 
+  inactivatePage();
+
   var activatePage = function () {
     toggleClassList(false);
     adFormElements.forEach(function (adFormElement) {
@@ -36,21 +38,18 @@
 
     mapPins.appendChild(window.pin.createFragmentPin(window.data.createSimilarCards(COUNTS_CARD)));
     map.insertBefore(window.card.createFragmentCard(window.data.createSimilarCards(COUNTS_CARD)), filtersContainer);
+    mapPinMain.removeEventListener('mousedown', onMapPinMainClick);
+    mapPinMain.removeEventListener('keydown', onMapPinMainClick);
   };
 
-  inactivatePage();
-
-  mapPinMain.addEventListener('mousedown', function (evt) {
-    if (evt.button === 0) {
+  var onMapPinMainClick = function (evt) {
+    if ((evt.type === 'mousedown' && evt.button === 0) || (evt.type === 'keydown' && evt.key === 'Enter')) {
       evt.preventDefault();
       activatePage();
     }
-  });
+  };
 
-  mapPinMain.addEventListener('keydown', function (evt) {
-    if (evt.key === 'Enter') {
-      evt.preventDefault();
-      activatePage();
-    }
-  });
+  mapPinMain.addEventListener('mousedown', onMapPinMainClick);
+  mapPinMain.addEventListener('keydown', onMapPinMainClick);
+
 })();
