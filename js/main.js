@@ -11,7 +11,7 @@
   var COUNTS_CARD = 8;
 
   var calculateAddress = function (offset) {
-    return (parseFloat(mapPinMain.style.left) + Math.floor(mapPinMain.offsetWidth / 2)) + ' ,' + (parseFloat(mapPinMain.style.top) + offset);
+    return (parseFloat(mapPinMain.style.left) + Math.floor(mapPinMain.offsetWidth / 2)) + ', ' + (parseFloat(mapPinMain.style.top) + offset);
   };
 
   var toggleClassList = function (bool) {
@@ -36,10 +36,26 @@
     });
     addressField.value = calculateAddress(Math.floor(mapPinMain.offsetHeight) + 11);
 
-    mapPins.appendChild(window.pin.createFragmentPin(window.data.createSimilarCards(COUNTS_CARD)));
-    map.insertBefore(window.card.createFragmentCard(window.data.createSimilarCards(COUNTS_CARD)), filtersContainer);
+    var SimilarCardList = window.data.createSimilarCards(COUNTS_CARD);
+    mapPins.appendChild(window.pin.createFragmentPin(SimilarCardList));
+    map.insertBefore(window.card.createFragmentCard(SimilarCardList), filtersContainer);
+
     mapPinMain.removeEventListener('mousedown', onMapPinMainClick);
     mapPinMain.removeEventListener('keydown', onMapPinMainClick);
+
+    var allMapPins = mapPins.querySelectorAll('.map__pin');
+    var allMapCards = map.querySelectorAll('.map__card');
+
+    var openMapCard = function (pinsList) {
+      for (var i = 1; i < pinsList.length; i++) {
+        window.popup.onPinClick(pinsList[i], allMapCards[i - 1]);
+        window.popup.onPinKeydown(pinsList[i], allMapCards[i - 1]);
+        window.popup.onPopupCloseClick(allMapCards[i - 1]);
+        window.popup.onPopupCloseKeydown(allMapCards[i - 1]);
+      }
+    };
+
+    openMapCard(allMapPins);
   };
 
   var onMapPinMainClick = function (evt) {
@@ -51,5 +67,4 @@
 
   mapPinMain.addEventListener('mousedown', onMapPinMainClick);
   mapPinMain.addEventListener('keydown', onMapPinMainClick);
-
 })();
