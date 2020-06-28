@@ -23,4 +23,42 @@
   countOfRooms.addEventListener('change', function () {
     checkMatchesGuestsToRooms(countOfRooms, countOfGuests);
   });
+
+  var houseType = document.querySelector('#type');
+  var housePrice = document.querySelector('#price');
+
+  var checkMatchesPriceToType = function (type, price) {
+    switch (type.value) {
+      case 'bungalo':
+        price.min = 0;
+        break;
+      case 'flat':
+        price.min = 1000;
+        break;
+      case 'house':
+        price.min = 5000;
+        break;
+      case 'palace':
+        price.min = 10000;
+        break;
+    }
+    price.placeholder = price.min;
+    price.setCustomValidity('Значение должно быть больше или равно ' + price.min);
+  };
+
+  houseType.addEventListener('change', function () {
+    checkMatchesPriceToType(houseType, housePrice);
+  });
+
+  var houseTimein = document.querySelector('#timein');
+  var houseTimeout = document.querySelector('#timeout');
+
+  var checkMatchesTimeoutToTimein = function (timein, timeout) {
+    timeout.value = timein.value;
+  };
+
+  houseTimein.addEventListener('change', function () {
+    checkMatchesTimeoutToTimein(houseTimein, houseTimeout);
+  });
+
 })();

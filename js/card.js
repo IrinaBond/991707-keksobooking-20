@@ -105,6 +105,7 @@
     renderFeatureField(card.offer.features, cardElement.querySelectorAll('.popup__feature'), cardElement.querySelector('.popup__features'));
     renderImgField(card.offer.photos, cardElement.querySelector('.popup__photo'), cardElement.querySelector('.popup__photos'));
     renderTextField(card.offer.description, cardElement.querySelector('.popup__description'));
+    cardElement.classList.add('hidden');
 
     return cardElement;
   };
