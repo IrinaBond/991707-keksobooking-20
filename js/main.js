@@ -10,10 +10,6 @@
   var addressField = document.querySelector('#address');
   var COUNTS_CARD = 8;
 
-  var calculateAddress = function (offset) {
-    return (parseFloat(mapPinMain.style.left) + Math.floor(mapPinMain.offsetWidth / 2)) + ', ' + (parseFloat(mapPinMain.style.top) + offset);
-  };
-
   var toggleClassList = function (bool) {
     map.classList.toggle('map--faded', bool);
     advert.classList.toggle('ad-form--disabled', bool);
@@ -24,7 +20,7 @@
     adFormElements.forEach(function (adFormElement) {
       adFormElement.setAttribute('disabled', true);
     });
-    addressField.value = calculateAddress(Math.floor(mapPinMain.offsetHeight / 2));
+    addressField.value = window.util.calculateAddress(Math.floor(mapPinMain.offsetHeight / 2));
   };
 
   inactivatePage();
@@ -34,7 +30,7 @@
     adFormElements.forEach(function (adFormElement) {
       adFormElement.removeAttribute('disabled');
     });
-    addressField.value = calculateAddress(Math.floor(mapPinMain.offsetHeight) + 11);
+    addressField.value = window.util.calculateAddress(Math.floor(mapPinMain.offsetHeight) + 22);
 
     var SimilarCardList = window.data.createSimilarCards(COUNTS_CARD);
     mapPins.appendChild(window.pin.createFragmentPin(SimilarCardList));
@@ -67,4 +63,6 @@
 
   mapPinMain.addEventListener('mousedown', onMapPinMainClick);
   mapPinMain.addEventListener('keydown', onMapPinMainClick);
+
+  mapPinMain.addEventListener('mousedown', window.move.onMapPinMainClickToMove);
 })();
