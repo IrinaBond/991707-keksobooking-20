@@ -17,8 +17,8 @@
 
   var createLocation = function () {
     var location = {};
-    location.x = window.util.getRandomFromRange(25, mapPins.offsetWidth - 25);
-    location.y = window.util.getRandomFromRange(130, 650);
+    location.x = window.util.getRandomFromRange(0, mapPins.offsetWidth);
+    location.y = window.util.getRandomFromRange(130, 630);
     return location;
   };
 
