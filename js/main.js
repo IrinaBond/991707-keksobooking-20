@@ -32,26 +32,38 @@
     });
     addressField.value = window.util.calculateAddress(Math.floor(mapPinMain.offsetHeight) + 22);
 
-    var SimilarCardList = window.data.createSimilarCards(COUNTS_CARD);
-    mapPins.appendChild(window.pin.createFragmentPin(SimilarCardList));
-    map.insertBefore(window.card.createFragmentCard(SimilarCardList), filtersContainer);
-
-    mapPinMain.removeEventListener('mousedown', onMapPinMainClick);
-    mapPinMain.removeEventListener('keydown', onMapPinMainClick);
-
-    var allMapPins = mapPins.querySelectorAll('.map__pin');
-    var allMapCards = map.querySelectorAll('.map__card');
-
-    var openMapCard = function (pinsList) {
-      for (var i = 1; i < pinsList.length; i++) {
-        window.popup.onPinClick(pinsList[i], allMapCards[i - 1]);
-        window.popup.onPinKeydown(pinsList[i], allMapCards[i - 1]);
-        window.popup.onPopupCloseClick(allMapCards[i - 1]);
-        window.popup.onPopupCloseKeydown(allMapCards[i - 1]);
-      }
+    var onError = function (message) {
+      console.error(message);
     };
 
-    openMapCard(allMapPins);
+    var onSuccess = function (data) {
+      var SimilarCardList = [];
+      for (var i = 0; i < COUNTS_CARD; i++) {
+        SimilarCardList.push(data[i]);
+      }
+
+      mapPins.appendChild(window.pin.createFragmentPin(SimilarCardList));
+      map.insertBefore(window.card.createFragmentCard(SimilarCardList), filtersContainer);
+
+      var allMapPins = mapPins.querySelectorAll('.map__pin');
+      var allMapCards = map.querySelectorAll('.map__card');
+
+      allMapPins.forEach(function (mapPin, index) {
+        if (index === 0) {
+          return;
+        }
+        window.popup.onPinClick(mapPin, allMapCards[index - 1]);
+        window.popup.onPinKeydown(mapPin, allMapCards[index - 1]);
+        window.popup.onPopupCloseClick(allMapCards[index - 1]);
+        window.popup.onPopupCloseKeydown(allMapCards[index - 1]);
+      });
+
+      mapPinMain.removeEventListener('mousedown', onMapPinMainClick);
+      mapPinMain.removeEventListener('keydown', onMapPinMainClick);
+
+    };
+
+    window.load('https://javascript.pages.academy/keksobooking/data', onSuccess, onError);
   };
 
   var onMapPinMainClick = function (evt) {
