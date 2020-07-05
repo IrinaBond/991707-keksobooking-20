@@ -32,8 +32,19 @@
     });
     addressField.value = window.util.calculateAddress(Math.floor(mapPinMain.offsetHeight) + 22);
 
+    mapPinMain.removeEventListener('mousedown', onMapPinMainClick);
+    mapPinMain.removeEventListener('keydown', onMapPinMainClick);
+
     var onError = function (message) {
-      console.error(message);
+      var node = document.createElement('div');
+      node.style = 'z-index: 100; margin: 0 auto; text-align: center; background-color: red;';
+      node.style.position = 'absolute';
+      node.style.left = 0;
+      node.style.right = 0;
+      node.style.fontSize = '30px';
+
+      node.textContent = message;
+      document.body.insertAdjacentElement('afterbegin', node);
     };
 
     var onSuccess = function (data) {
@@ -57,9 +68,6 @@
         window.popup.onPopupCloseClick(allMapCards[index - 1]);
         window.popup.onPopupCloseKeydown(allMapCards[index - 1]);
       });
-
-      mapPinMain.removeEventListener('mousedown', onMapPinMainClick);
-      mapPinMain.removeEventListener('keydown', onMapPinMainClick);
 
     };
 
