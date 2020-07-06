@@ -2,7 +2,9 @@
 
 (function () {
   var checkEmptyField = function (cardValue, popupField) {
-    if (cardValue === undefined) {
+    if (Array.isArray(cardValue) && cardValue.length === 0) {
+      popupField.classList.add('visually-hidden');
+    } else if (cardValue === undefined) {
       popupField.classList.add('visually-hidden');
     }
   };
