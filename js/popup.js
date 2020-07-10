@@ -10,6 +10,15 @@
   };
 
   window.popup = {
+    onDocumentEscPress: function (closeFn, evt) {
+      console.log('evt: ' + evt);
+      console.log('closeFn: ' + closeFn);
+      if (evt.key === 'Escape') {
+        evt.preventDefault();
+        closeFn();
+      }
+    },
+
     openPopup: function (card) {
       card.classList.remove('hidden');
       card.classList.add('popup--opened');
@@ -19,6 +28,7 @@
 
     closePopup: function () {
       var openedCard = document.querySelector('.popup--opened');
+
       if (openedCard) {
         openedCard.classList.add('hidden');
         openedCard.classList.remove('popup--opened');
