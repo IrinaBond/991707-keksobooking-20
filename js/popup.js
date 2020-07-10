@@ -11,8 +11,6 @@
 
   window.popup = {
     onDocumentEscPress: function (closeFn, evt) {
-      console.log('evt: ' + evt);
-      console.log('closeFn: ' + closeFn);
       if (evt.key === 'Escape') {
         evt.preventDefault();
         closeFn();
