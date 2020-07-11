@@ -30,21 +30,25 @@
   var checkMatchesPriceToType = function (type, price) {
     switch (type.value) {
       case 'bungalo':
-        price.min = 0;
+        price.setAttribute('min', '0');
         break;
       case 'flat':
-        price.min = 1000;
+        price.setAttribute('min', '1000');
         break;
       case 'house':
-        price.min = 5000;
+        price.setAttribute('min', '5000');
         break;
       case 'palace':
-        price.min = 10000;
+        price.setAttribute('min', '10000');
         break;
     }
-    price.placeholder = price.min;
-    price.setCustomValidity('Значение должно быть больше или равно ' + price.min);
+    price.placeholder = price.getAttribute('min');
+    price.setCustomValidity('');
+    if (!price.validity.valid) {
+      price.setCustomValidity('Значение должно быть больше или равно ' + price.getAttribute('min'));
+    }
   };
+
 
   houseType.addEventListener('change', function () {
     checkMatchesPriceToType(houseType, housePrice);
