@@ -23,19 +23,57 @@
     }
   };
 
+  var removeAllPins = function () {
+    var allMapPins = mapPins.querySelectorAll('.map__pin');
+    if (allMapPins.length > 1) {
+      var fragmentPinsToRemove = document.createDocumentFragment();
+      for (var i = 1; i < allMapPins.length; i++) {
+        fragmentPinsToRemove.appendChild(allMapPins[i]);
+      }
+      fragmentPinsToRemove = '';
+    }
+  };
+
+  var removeAllCards = function () {
+    var allMapCards = map.querySelectorAll('.map__card');
+    if (allMapCards) {
+      var fragmentCardsToRemove = document.createDocumentFragment();
+      for (var i = 0; i < allMapCards.length; i++) {
+        fragmentCardsToRemove.appendChild(allMapCards[i]);
+      }
+      fragmentCardsToRemove = '';
+    }
+  };
+
+  var addPinListeners = function () {
+    var allMapPins = mapPins.querySelectorAll('.map__pin');
+    var allMapCards = map.querySelectorAll('.map__card');
+
+    allMapPins.forEach(function (mapPin, index) {
+      if (index === 0) {
+        return;
+      }
+      window.popup.onPinClick(mapPin, allMapCards[index - 1]);
+      window.popup.onPinKeydown(mapPin, allMapCards[index - 1]);
+      window.popup.onPopupCloseClick(allMapCards[index - 1]);
+      window.popup.onPopupCloseKeydown(allMapCards[index - 1]);
+    });
+  };
+
+  var renderMapItems = function (adsArray) {
+    mapPins.appendChild(window.pin.createFragmentPin(adsArray));
+    map.insertBefore(window.card.createFragmentCard(adsArray), filtersContainer);
+    addPinListeners();
+  };
+
   var inactivatePage = function () {
     toggleClassList(true);
     adFormElements.forEach(function (adFormElement) {
       adFormElement.setAttribute('disabled', true);
     });
-    var allMapPins = mapPins.querySelectorAll('.map__pin');
 
-    if (allMapPins.length > 1) {
-      var fragmentPinToRemove = document.createDocumentFragment();
-      for (var i = 1; i < allMapPins.length; i++) {
-        fragmentPinToRemove.appendChild(allMapPins[i]);
-      }
-    }
+    removeAllPins();
+    removeAllCards();
 
     addressField.value = window.util.calculateAddress(Math.floor(mapPinMain.offsetHeight / 2));
 
@@ -71,30 +109,43 @@
 
     var successLoad = function (data) {
       var SimilarCardList = [];
+      var allAds = data;
       for (var i = 0; i < COUNTS_CARD; i++) {
-        SimilarCardList.push(data[i]);
+        SimilarCardList.push(allAds[i]);
       }
 
-      mapPins.appendChild(window.pin.createFragmentPin(SimilarCardList));
-      map.insertBefore(window.card.createFragmentCard(SimilarCardList), filtersContainer);
+      renderMapItems(SimilarCardList);
 
-      var allMapPins = mapPins.querySelectorAll('.map__pin');
-      var allMapCards = map.querySelectorAll('.map__card');
+      var filterForm = document.querySelector('.map__filters');
+      var housingType = filterForm.querySelector('#housing-type');
 
-      allMapPins.forEach(function (mapPin, index) {
-        if (index === 0) {
+      housingType.addEventListener('change', function () {
+        var actualType = housingType.value;
+
+        removeAllPins();
+        removeAllCards();
+
+        if (actualType === 'any') {
+          renderMapItems(SimilarCardList);
           return;
         }
-        window.popup.onPinClick(mapPin, allMapCards[index - 1]);
-        window.popup.onPinKeydown(mapPin, allMapCards[index - 1]);
-        window.popup.onPopupCloseClick(allMapCards[index - 1]);
-        window.popup.onPopupCloseKeydown(allMapCards[index - 1]);
+
+        var filterWithHousingType = function (ad) {
+          return ad.offer.type === actualType;
+        };
+        var adsFilteredWithType = allAds.filter(filterWithHousingType);
+        var MAX_RENDER_ADS = 5;
+        var lastIndex = MAX_RENDER_ADS;
+        if (adsFilteredWithType.length <= MAX_RENDER_ADS) {
+          lastIndex = adsFilteredWithType.length;
+        }
+        var adsSliced = adsFilteredWithType.slice(0, lastIndex);
+        renderMapItems(adsSliced);
       });
     };
 
     window.load('https://javascript.pages.academy/keksobooking/data', successLoad, errorLoad);
   };
-
 
   var successTemplate = document.querySelector('#success')
     .content
