@@ -10,13 +10,6 @@
   };
 
   window.popup = {
-    onDocumentEscPress: function (closeFn, evt) {
-      if (evt.key === 'Escape') {
-        evt.preventDefault();
-        closeFn();
-      }
-    },
-
     openPopup: function (card) {
       card.classList.remove('hidden');
       card.classList.add('popup--opened');
