@@ -20,7 +20,7 @@
 
   window.message = {
     successUpload: function () {
-      window.main.inactivatePage();
+      window.inactivate.inactivatePage();
       advert.reset();
 
       successElement.classList.remove('hidden');
