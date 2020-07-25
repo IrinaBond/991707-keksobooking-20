@@ -1,7 +1,7 @@
 'use strict';
 
 (function () {
-  var COUNTS_CARD = 8;
+  var COUNTS_CARD = 5;
 
   var filtersContainer = document.querySelector('.map__filters-container');
   var map = document.querySelector('.map');
@@ -67,31 +67,67 @@
 
         var filterForm = document.querySelector('.map__filters');
         var housingType = filterForm.querySelector('#housing-type');
+        var housingPrice = filterForm.querySelector('#housing-price');
+        var housingRooms = filterForm.querySelector('#housing-rooms');
+        var housingGuests = filterForm.querySelector('#housing-guests');
+        var housingFeatures = filterForm.querySelector('#housing-features');
+        var allCheckbox = Array.from(filterForm.querySelectorAll('input[type="checkbox"]'));
 
-        housingType.addEventListener('change', function () {
-          var actualType = housingType.value;
+        var filterWithPrice = function (filterField, adField) {
+          if (filterField === 'any' ||
+            (filterField === 'middle' && adField >= 10000 && adField < 50000) ||
+            (filterField === 'low' && adField < 10000) ||
+            (filterField === 'high' && adField >= 50000)) {
+            return true;
+          }
+          return false;
+        };
 
+        var filterAds = function () {
           window.inactivate.removeAllPins();
           window.inactivate.removeAllCards();
+          var checkboxChecked = allCheckbox.filter(function (checkbox) {
+            return checkbox.checked;
+          });
+          var checkboxCheckedValues = checkboxChecked.map(function (checkbox) {
+            return checkbox.value;
+          });
 
-          if (actualType === 'any') {
-            window.activate.renderMapItems(SimilarCardList);
-            return;
-          }
-
-          var filterWithHousingType = function (ad) {
-            return ad.offer.type === actualType;
+          var isFeaturesFilteredMatchesAd = function (adFeaturesList) {
+            for (var j = 0; j < checkboxCheckedValues.length; j++) {
+              if (adFeaturesList.indexOf(checkboxCheckedValues[j]) === -1) {
+                return false;
+              }
+            }
+            return true;
           };
-          var adsFilteredWithType = allAds.filter(filterWithHousingType);
-          var MAX_RENDER_ADS = 5;
-          var lastIndex = MAX_RENDER_ADS;
-          if (adsFilteredWithType.length <= MAX_RENDER_ADS) {
+          var filterWithСriteria = function (ad) {
+            var isHousingMatches = housingType.value === 'any' || housingType.value === ad.offer.type;
+            var isPriceMatches = filterWithPrice(housingPrice.value, ad.offer.price);
+            var isRoomsMatches = housingRooms.value === 'any' || parseInt(housingRooms.value, 10) === ad.offer.rooms;
+            var isGuestsMatches = housingGuests.value === 'any' || parseInt(housingGuests.value, 10) === ad.offer.guests;
+            return isHousingMatches &&
+                   isPriceMatches &&
+                   isRoomsMatches &&
+                   isGuestsMatches &&
+                   isFeaturesFilteredMatchesAd(ad.offer.features);
+          };
+          var adsFilteredWithType = allAds.filter(filterWithСriteria);
+          var lastIndex = COUNTS_CARD;
+          if (adsFilteredWithType.length <= COUNTS_CARD) {
             lastIndex = adsFilteredWithType.length;
           }
           var adsSliced = adsFilteredWithType.slice(0, lastIndex);
           window.activate.renderMapItems(adsSliced);
-        });
+        };
+        var filterWithDebounce = window.debounce(filterAds);
+        housingType.addEventListener('change', filterWithDebounce);
+        housingPrice.addEventListener('change', filterWithDebounce);
+        housingRooms.addEventListener('change', filterWithDebounce);
+        housingGuests.addEventListener('change', filterWithDebounce);
+        housingFeatures.addEventListener('change', filterWithDebounce);
       };
+
       window.load('https://javascript.pages.academy/keksobooking/data', successLoad, errorLoad);
     }
   };
