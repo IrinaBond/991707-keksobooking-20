@@ -7,13 +7,22 @@
   var checkMatchesGuestsToRooms = function (countRooms, countGuests) {
     var roomsInt = parseInt(countRooms.value, 10);
     var guestsInt = parseInt(countGuests.value, 10);
-    if (roomsInt === 100 && guestsInt > 0) {
-      countOfGuests.setCustomValidity('Вы можете выбрать только пункт Не для гостей');
-    } else if (guestsInt > roomsInt || guestsInt === 0) {
-      countOfGuests.setCustomValidity('Количество гостей должно быть не больше количества комнат');
+
+    if (roomsInt === 100) {
+      if (guestsInt > 0) {
+        countOfGuests.setCustomValidity('Вы можете выбрать только пункт Не для гостей');
+        return;
+      }
     } else {
-      countOfGuests.setCustomValidity('');
+      if (guestsInt > roomsInt) {
+        countOfGuests.setCustomValidity('Количество гостей должно быть не больше количества комнат');
+        return;
+      } else if (guestsInt === 0) {
+        countOfGuests.setCustomValidity('Необходимо указать количество гостей');
+        return;
+      }
     }
+    countOfGuests.setCustomValidity('');
   };
 
   countOfGuests.addEventListener('change', function () {

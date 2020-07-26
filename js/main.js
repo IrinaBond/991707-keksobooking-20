@@ -13,7 +13,7 @@
   });
 
   advert.addEventListener('submit', function (evt) {
-    window.upload(new FormData(advert), window.message.successUpload, window.message.errorUpload);
+    window.backend.upload(new FormData(advert), window.message.successUpload, window.message.errorUpload);
     evt.preventDefault();
   });
 })();

@@ -20,7 +20,6 @@
         for (var i = 1; i < allMapPins.length; i++) {
           fragmentPinsToRemove.appendChild(allMapPins[i]);
         }
-        fragmentPinsToRemove = '';
       }
     },
 
@@ -31,7 +30,6 @@
         for (var i = 0; i < allMapCards.length; i++) {
           fragmentCardsToRemove.appendChild(allMapCards[i]);
         }
-        fragmentCardsToRemove = '';
       }
     },
 

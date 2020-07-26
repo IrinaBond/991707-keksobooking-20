@@ -74,13 +74,10 @@
         var allCheckbox = Array.from(filterForm.querySelectorAll('input[type="checkbox"]'));
 
         var filterWithPrice = function (filterField, adField) {
-          if (filterField === 'any' ||
+          return (filterField === 'any' ||
             (filterField === 'middle' && adField >= 10000 && adField < 50000) ||
             (filterField === 'low' && adField < 10000) ||
-            (filterField === 'high' && adField >= 50000)) {
-            return true;
-          }
-          return false;
+            (filterField === 'high' && adField >= 50000));
         };
 
         var filterAds = function () {
@@ -101,7 +98,7 @@
             }
             return true;
           };
-          var filterWithСriteria = function (ad) {
+          var filterWithCriteria = function (ad) {
             var isHousingMatches = housingType.value === 'any' || housingType.value === ad.offer.type;
             var isPriceMatches = filterWithPrice(housingPrice.value, ad.offer.price);
             var isRoomsMatches = housingRooms.value === 'any' || parseInt(housingRooms.value, 10) === ad.offer.rooms;
@@ -112,7 +109,7 @@
                    isGuestsMatches &&
                    isFeaturesFilteredMatchesAd(ad.offer.features);
           };
-          var adsFilteredWithType = allAds.filter(filterWithСriteria);
+          var adsFilteredWithType = allAds.filter(filterWithCriteria);
           var lastIndex = COUNTS_CARD;
           if (adsFilteredWithType.length <= COUNTS_CARD) {
             lastIndex = adsFilteredWithType.length;
@@ -128,7 +125,7 @@
         housingFeatures.addEventListener('change', filterWithDebounce);
       };
 
-      window.load('https://javascript.pages.academy/keksobooking/data', successLoad, errorLoad);
+      window.backend.load('https://javascript.pages.academy/keksobooking/data', successLoad, errorLoad);
     }
   };
 })();
